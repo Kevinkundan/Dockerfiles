@@ -1,0 +1,26 @@
+FROM python:3.11-slim As builder 
+
+WORKDIR /app 
+
+RUN apt-get update && aot-get install -y --no-install-recommends build-essential 
+
+COPY requirement.txt /app 
+
+RUN pip install -y --no-cache-dir target=app/requirement -r requirement.txt 
+
+FROM python:3.11-slim 
+
+WORKDIR /app 
+
+COPY --from=builder /app/requirement /usr/local/lib/python:3.11/site-package/
+
+COPY ./app /app 
+
+EXPOSE 2000 
+
+RUN adduser -M appuser 
+
+USER appuser 
+
+CMD ["python", "app.py"]
+
