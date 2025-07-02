@@ -1,0 +1,36 @@
+kubectl taint nodes node01 dedicated=nginx:NoSchedule-
+
+
+# Apply this Deployment to allow pods on tainted node
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: Uk
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-node01
+  template:
+    metadata:
+      labels:
+        app: nginx-node01
+    spec:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "nginx"
+          effect: "NoSchedule"
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+
+
+
+🧹 Remove Taint (if needed)
+
+kubectl taint nodes node01 dedicated=nginx:NoSchedule-
+
